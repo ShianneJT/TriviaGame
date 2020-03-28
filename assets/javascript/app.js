@@ -18,6 +18,10 @@ Don't forget to include a countdown timer. */
 
 $(document).ready(function() {
 
+    var timerRunning = false;
+    var intervalId;
+    var timer = 5; 
+
     // Object array with trivia questions
     var triviaQs = [
         {
@@ -123,6 +127,33 @@ $(document).ready(function() {
     ] 
 
 
+    $('#start').click(startTimer); //~~~~~ FOR TESTING RIGHT NOW ~~~~~~~~~
+
+// If the timer is not running, run the countdown option
+    function startTimer() {
+        if (!timerRunning) {
+            intervalId = setInterval(countdown, 1000)
+            timerRunning = true;
+        }
+    };
+
+// Timer begins and decrements 1 from timer var every second until the value is 0
+    function countdown() {
+        $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");
+        console.log(timer);
+        timer--;
+        
+// When the timer reaches 0 
+        if (timer === 0) {
+            timerRunning = false
+            clearInterval(intervalId);       
+            $('#testing').html("<p>TIME IS UP!</p>")
+            console.log(timer)
+        }
+    } 
+
+
+    
 
 
 }) // End of $(document).ready(function()

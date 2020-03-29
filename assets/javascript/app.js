@@ -121,7 +121,7 @@ $(document).ready(function() {
 
     var timerRunning = false;
     var intervalId;
-    var timer = 5;
+    var timer = 10;
     var numOfQs = triviaQs.length;  
     var randomQindex = Math.floor(Math.random() * triviaQs.length);
     var choices = triviaQs[randomQindex];
@@ -132,13 +132,25 @@ $(document).ready(function() {
     var usedQs = [];
 
 
-    console.log(numOfQs);
-    console.log(randomQindex);
-    console.log(choices);
+    console.log(`Number of questions: ${numOfQs}`);
+    console.log(`Random Q Index: ${randomQindex}`);
+    console.log(`Choices: ${choices}`);
 
 
+// Click the start button to start the game displays questoin and moves it to used qs
+    $('#start').click(function() {
+         $('#start').hide();
+         displayRandomQ();
+         startTimer();
+         for (var i = 0; i < triviaQs.length; i++) {
+             usedQs.push(triviaQs[i])
+        }
 
-    $('#start').click(displayRandomQ); //~~~~~ FOR TESTING RIGHT NOW ~~~~~~~~~
+     }); //~~~~~ FOR TESTING RIGHT NOW ~~~~~~~~~
+
+    // $('#start').click(function () {
+    //     $('#start')
+    // })
 
 // If the timer is not running, run the countdown option
     function startTimer() {
@@ -153,7 +165,7 @@ $(document).ready(function() {
         $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");
         console.log(timer);
         timer--;
-        
+
 // When the timer reaches 0 
         if (timer === 0) {
             noAnswer++;
@@ -163,34 +175,68 @@ $(document).ready(function() {
             console.log(timer)
             console.log(noAnswer)
         }
-    }
+    };
 
-// Display a random question
+// Stops the timer
+    function stopTimer() {
+        timerRunning = false;
+        clearInterval(intervalId);
+    };
+        
+
+
+    
+
+// Display a random question adds value for each option
     function displayRandomQ() {
         $("#randomQdiv").html("<p>" + choices.question + "</p>");
-            for (var i = 0; i < choices.options.length; i++) {
+            for (var j = 0; j < choices.options.length; j++) {
                 var userChoicesDiv = $('<div>');
                 userChoicesDiv.addClass('userGuess');
-                userChoicesDiv.html(choices.options[i])
-                userChoicesDiv.data('guessValue', i);
+                userChoicesDiv.html(choices.options[j])
+                userChoicesDiv.data('guessValue', j);
                 $('#optionsDiv').append(userChoicesDiv);
         }
 
+// seeing if user got the question right
         $('.userGuess').click(function() {
-            usersChoice = parseInt($(this).data('guessValue'));
+            usersChoice = parseInt($(this).data('guessValue'));           
 
             if (usersChoice === choices.answer) {
-                console.log('Correct!');
+                stopTimer()
+                usedQs.push($(this));
                 correctAnswer++;
+                $('#testing').html('<h1>CORRECT!</h1>')
+
+                
+                
                 console.log(`Num of correct: ${correctAnswer}`)
+                console.log('Correct!');
+                console.log(`Used Qs: ${usedQs.length}`);
+                console.log('randomQindex');
+                console.log(`Number of questions left: ${triviaQs.length}`);
             } else {
                 console.log('Wrong-o!');
                 wrongAnswer++;
                 console.log(`Num of wrong: ${wrongAnswer}`);
             }
         })
+    }; // end of displayRandomQ()
 
+//checks for end game status
 
+    function endGameCheck() {
+        if ((correctAnswer + wrongAnswer + noAnswer) === triviaQs) {
+            $('#questionDiv').empty();
+            $('#questionDiv').html("<p> Here is how you did: </p>")
+            $('#choicesDiv').empty();
+            $('#choicesDiv').append(`<p> Correct: ${correctAnswer} </p>`);
+            $('#choicesDiv').append("<p>Incorrect: " + wrongAnswer + "</p>");
+            $('#choicesDiv').append("<p>Unanswered: " + noAnswer + "</p>");
+        } else {
+            startTimer()
+            displayRandomQ()
+        }
     }
     
 

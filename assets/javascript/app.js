@@ -14,19 +14,12 @@ Don't forget to include a countdown timer. */
 // Qs unanswered
 
 // Have a start button that on click will disappear and load the questions
-
-
 $(document).ready(function() {
-
-    var timerRunning = false;
-    var intervalId;
-    var timer = 5; 
-
-    // Object array with trivia questions
+// Object array with trivia questions
     var triviaQs = [
         {
             question: "Who is Han Solo's faithful companion?",
-            choices: [
+            options: [
                 'Fozzy Bear',
                 'Chewbacca',
                 'Harry',
@@ -36,7 +29,7 @@ $(document).ready(function() {
         },
         {
             question: "What is the name of Boba Fett's ship?",
-            choices: [
+            options: [
                 'Starship Enterprise',
                 'Ebon Hawk',
                 'Millennium Falcon',
@@ -46,7 +39,7 @@ $(document).ready(function() {
         },
         {
             question: "What kind of droid is C-3PO?",
-            choices: [
+            options: [
                 'Interrogation',
                 'Protocol',
                 'Samsung Galaxy S8',
@@ -56,7 +49,7 @@ $(document).ready(function() {
         },
         {
             question: "What is the name of the Ewok who helps Leia? ",
-            choices: [
+            options: [
                 'Olaf',
                 'Kermit',
                 'Wicket',
@@ -66,7 +59,7 @@ $(document).ready(function() {
         },
         {
             question: "What color is Yoda's lightsaber?",
-            choices: [
+            options: [
                 'Red',
                 'Green',
                 'Blue',
@@ -76,7 +69,7 @@ $(document).ready(function() {
         },
         {
             question: "Who is Leia's only hope?",
-            choices: [
+            options: [
                 'Jabba The Hutt',
                 'Barack Obama',
                 'Obi-Wan Kenobi',
@@ -86,7 +79,7 @@ $(document).ready(function() {
         },
         {
             question: "Who is C3PO's companion?",
-            choices: [
+            options: [
                 'Bib Fortuna',
                 'Willrow Hood',
                 'R2-D2',
@@ -96,7 +89,7 @@ $(document).ready(function() {
         },
         {
             question: "Who is Luke's Uncle?",
-            choices: [
+            options: [
                 'Sam',
                 'Phil',
                 'Owen',
@@ -106,7 +99,7 @@ $(document).ready(function() {
         },
         {
             question: "What does Elan Sel'Sabagno (seriously, that's his name) try to sell Obi-Wan in the club on Coruscant?",
-            choices: [
+            options: [
                 'Death Sticks',
                 'Kyber Crystals',
                 'Toilet Paper',
@@ -116,7 +109,7 @@ $(document).ready(function() {
         },
         {
             question: "What planet is Han Solo from?",
-            choices: [
+            options: [
                 'Corellia',
                 'Coruscant',
                 'Dathomir',
@@ -126,8 +119,26 @@ $(document).ready(function() {
         },        
     ] 
 
+    var timerRunning = false;
+    var intervalId;
+    var timer = 5;
+    var numOfQs = triviaQs.length;  
+    var randomQindex = Math.floor(Math.random() * triviaQs.length);
+    var choices = triviaQs[randomQindex];
+    var usersChoice = '';
+    var correctAnswer = 0;
+    var wrongAnswer = 0
+    var noAnswer = 0;
+    var usedQs = [];
 
-    $('#start').click(startTimer); //~~~~~ FOR TESTING RIGHT NOW ~~~~~~~~~
+
+    console.log(numOfQs);
+    console.log(randomQindex);
+    console.log(choices);
+
+
+
+    $('#start').click(displayRandomQ); //~~~~~ FOR TESTING RIGHT NOW ~~~~~~~~~
 
 // If the timer is not running, run the countdown option
     function startTimer() {
@@ -145,15 +156,46 @@ $(document).ready(function() {
         
 // When the timer reaches 0 
         if (timer === 0) {
+            noAnswer++;
             timerRunning = false
             clearInterval(intervalId);       
             $('#testing').html("<p>TIME IS UP!</p>")
             console.log(timer)
+            console.log(noAnswer)
         }
-    } 
+    }
+
+// Display a random question
+    function displayRandomQ() {
+        $("#randomQdiv").html("<p>" + choices.question + "</p>");
+            for (var i = 0; i < choices.options.length; i++) {
+                var userChoicesDiv = $('<div>');
+                userChoicesDiv.addClass('userGuess');
+                userChoicesDiv.html(choices.options[i])
+                userChoicesDiv.data('guessValue', i);
+                $('#optionsDiv').append(userChoicesDiv);
+        }
+
+        $('.userGuess').click(function() {
+            usersChoice = parseInt($(this).data('guessValue'));
+
+            if (usersChoice === choices.answer) {
+                console.log('Correct!');
+                correctAnswer++;
+                console.log(`Num of correct: ${correctAnswer}`)
+            } else {
+                console.log('Wrong-o!');
+                wrongAnswer++;
+                console.log(`Num of wrong: ${wrongAnswer}`);
+            }
+        })
+
+
+    }
+    
 
 
     
 
 
-}) // End of $(document).ready(function()
+}); // End of $(document).ready(function()

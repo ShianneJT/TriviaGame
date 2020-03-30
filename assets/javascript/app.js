@@ -112,38 +112,33 @@ $(document).ready(function() {
         },        
     ] 
 
+// Arrays
     var timerRunning = false;
-    var timer = 5;
+    var timer = 20;
     var intervalId;    
     var numOfQs = questionArr.length;  
     var randomQ;
+    var activeQs = [];
+    var usedQs = [];
     var questionIndex;
     var usersChoice = "";
     var correctAnswerCount = 0;
     var wrongAnswerCount = 0
     var noAnswerCount = 0;
-    var activeQs = [];
-
-    /*
-    console.log(`Number of questions: ${numOfQs}`);
-    console.log(`Random Q Index: ${randomQindex}`);
-    console.log(`Choices: ${choices}`);
-*/
 
 // Hides the reset button on load
-$('#reset').hide();
+    $('#reset').hide();
 
-// Click the start button to begin
+// Click Start to begin - start button disappears, a question is displayed while the timer starts
     $('#start').click(function() {
-         $('#start').hide();
-         displayRandomQ();
-         startTimer();
-    // Assigns all the questions into a temp array to avoid duplicate questions then splice later
-        // for (var i = 0; i < questionArr.length; i++) {
-        //     activeQs.push(questionArr[i]);
-        // }
-    });
-    console.log(`Active questions: ${activeQs.length}`);
+        $('#start').hide();
+        displayRandomQ();
+        startTimer();
+    // This adds the array of questions into a separate array to prevent duplicate questions
+        for (var i = 0; i < questionArr.length; i++) {
+            activeQs.push(questionArr[i]);
+        }
+    });    
 
 // Checks if the timer is running - if false run countdown function every second
     function startTimer() {
@@ -153,7 +148,7 @@ $('#reset').hide();
         }
     };
 
-// Timer starts countdown
+// Timer starts counting down from 20
     function countdown() {
         $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");        
         timer--;
@@ -166,19 +161,19 @@ $('#reset').hide();
             endGameCheck();
         }
     };
-
+console.log(`Timer: ${timer}`);
 // Stops the timer
     function stopTimer() {
         timerRunning = false;
         clearInterval(intervalId);
     };
 
-
 // Randomly picks a question from the array and assigns it to a variable
     function displayRandomQ() {
         randomQ = Math.floor(Math.random() * questionArr.length);
         questionIndex = questionArr[randomQ];
-
+console.log(`randomQ: ${randomQ}`);
+console.log(`questionIndex: ${questionIndex}`);
     // Displays the question, loops through and creates a div for each option
         $("#randomQdiv").html("<p>" + questionIndex.question + "</p>");
             for (var j = 0; j < questionIndex.options.length; j++) {
@@ -189,12 +184,12 @@ $('#reset').hide();
                 $('#answersDiv').append(choicesDiv);
         }
 
-    // This takes the users choice and changes the string to an integer
+    // This takes the users choice and changes the string to an integer to check against the answer
         $('.userGuess').click(function() {
             usersChoice = parseInt($(this).data('guessValue'));           
 
-    // If the assigned value is equal to the value of questionIndex.answer stop the timer
-        // ...add one to correct answers var and notify the user their choice is correct then run endGameCheck()
+    // If the value of the users guess is equal to the value of questionIndex.answer stop the timer
+    // ...add one to correct answers score and notify the user their choice is correct then check end game status
             if (usersChoice === questionIndex.answer) {
                 stopTimer();               
                 correctAnswerCount++;
@@ -203,7 +198,7 @@ $('#reset').hide();
                 console.log("Correct!");
                 endGameCheck();
     // If the value is not equal to the value, stop the timer
-        // ...add one to wrong answer var and notify the user their choice is incorrect then run endGameCheck()
+    // ...add one to wrong answer var and notify the user their choice is incorrect then run endGameCheck()
             } else {
                 stopTimer();
                 wrongAnswerCount++;
@@ -213,15 +208,21 @@ $('#reset').hide();
             }
         })
     }; // end of displayRandomQ()
-
+// clean up below
 // Checks the end game status
     function endGameCheck() {
         console.log("Are you going here?")
         $('#answersDiv').append("This is a test of the emergency broadcast system");
+    // Moves the question so it doesnt get duplicated
+        usedQs.push(questionIndex);
+        questionArr.splice(randomQ, 1);
+        console.log(usedQs);
+        console.log(questionArr);
         setTimeout(function() {
             $('#answersDiv').empty();
             timer = 5;
-        
+console.log(`randomQ second time: ${randomQ}`);
+console.log(`questionIndex second time: ${questionIndex}`);        
     
 
         if ((correctAnswerCount + wrongAnswerCount + noAnswerCount) === numOfQs) {

@@ -6,7 +6,7 @@
 // Doesn't stop at 10 questions
 // Needs to not duplicate questions
 
-$(document).ready(function() {    
+$(document).ready(function() {
 
 // Object array with trivia questions
     var questionArr = [
@@ -110,20 +110,20 @@ $(document).ready(function() {
             ],
             answer: 0,
         },        
-    ] 
+    ];
 
 // Arrays
     var timerRunning = false;
     var timer = 20;
-    var intervalId;    
-    var numOfQs = questionArr.length;  
+    var intervalId;
+    var numOfQs = questionArr.length;
     var randomQ;
+    var questionIndex;
     var activeQs = [];
     var usedQs = [];
-    var questionIndex;
     var usersChoice = "";
     var correctAnswerCount = 0;
-    var wrongAnswerCount = 0
+    var wrongAnswerCount = 0;
     var noAnswerCount = 0;
 
 // Hides the reset button on load
@@ -137,31 +137,35 @@ $(document).ready(function() {
     // This adds the array of questions into a separate array to prevent duplicate questions
         for (var i = 0; i < questionArr.length; i++) {
             activeQs.push(questionArr[i]);
-        }
-    });    
+            console.log('Active qs: ' + activeQs.length);
+            console.log('Used qs: ' + usedQs.length);
+            console.log('Q array: ' + questionArr.length);
+            console.log('The game has started');
+        };
+    });
 
 // Checks if the timer is running - if false run countdown function every second
     function startTimer() {
         if (!timerRunning) {
-            intervalId = setInterval(countdown, 1000)
+            intervalId = setInterval(countdown, 1000);
             timerRunning = true;
-        }
+        };
     };
 
 // Timer starts counting down from 20
     function countdown() {
-        $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");        
+        $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");
         timer--;
 
     // When the timer reaches 0, adds 1 to no answer, stops timer and notifies user the time is up
         if (timer === 0) {
             noAnswerCount++;
             stopTimer();
-            $('#answersDiv').html("<p>TIME IS UP!</p>")
+            $('#answersDiv').html("<p>TIME IS UP!</p>");
             endGameCheck();
-        }
+        };
     };
-console.log(`Timer: ${timer}`);
+
 // Stops the timer
     function stopTimer() {
         timerRunning = false;
@@ -172,30 +176,28 @@ console.log(`Timer: ${timer}`);
     function displayRandomQ() {
         randomQ = Math.floor(Math.random() * questionArr.length);
         questionIndex = questionArr[randomQ];
-console.log(`randomQ: ${randomQ}`);
-console.log(`questionIndex: ${questionIndex}`);
-    // Displays the question, loops through and creates a div for each option
+
+    // Displays the question, loops through and creates a div for each option with a class and value
         $("#randomQdiv").html("<p>" + questionIndex.question + "</p>");
-            for (var j = 0; j < questionIndex.options.length; j++) {
+            for (var i = 0; i < questionIndex.options.length; i++) {
                 var choicesDiv = $('<div>');
                 choicesDiv.addClass('userGuess');
-                choicesDiv.html(questionIndex.options[j])
-                choicesDiv.data('guessValue', j);
+                choicesDiv.html(questionIndex.options[i])
+                choicesDiv.data('guessValue', i);
                 $('#answersDiv').append(choicesDiv);
-        }
+        };
 
     // This takes the users choice and changes the string to an integer to check against the answer
         $('.userGuess').click(function() {
-            usersChoice = parseInt($(this).data('guessValue'));           
+            usersChoice = parseInt($(this).data('guessValue'));
 
     // If the value of the users guess is equal to the value of questionIndex.answer stop the timer
     // ...add one to correct answers score and notify the user their choice is correct then check end game status
             if (usersChoice === questionIndex.answer) {
-                stopTimer();               
+                stopTimer();
                 correctAnswerCount++;
                 usersChoice = "";
                 $('#answersDiv').html('<h1>CORRECT!</h1>');
-                console.log("Correct!");
                 endGameCheck();
     // If the value is not equal to the value, stop the timer
     // ...add one to wrong answer var and notify the user their choice is incorrect then run endGameCheck()
@@ -205,30 +207,30 @@ console.log(`questionIndex: ${questionIndex}`);
                 usersChoice = "";
                 $('#answersDiv').html('<h1>INCORRECT!</h1>');
                 endGameCheck();
-            }
-        })
+            };
+        });
     }; // end of displayRandomQ()
 // clean up below
 // Checks the end game status
     function endGameCheck() {
-        console.log("Are you going here?")
         $('#answersDiv').append("This is a test of the emergency broadcast system");
     // Moves the question so it doesnt get duplicated
         usedQs.push(questionIndex);
         questionArr.splice(randomQ, 1);
-        console.log(usedQs);
-        console.log(questionArr);
+        console.log('Active qs end: ' + activeQs.length);
+        console.log('Used qs end: ' + usedQs.length);
+        console.log('Q array end: ' + questionArr.length);
+        // console.log(JSON.stringify(questionArr));
+        // console.log(JSON.stringify(usedQs));
+        // console.log(JSON.stringify(questionArr));
         setTimeout(function() {
             $('#answersDiv').empty();
             timer = 5;
-console.log(`randomQ second time: ${randomQ}`);
-console.log(`questionIndex second time: ${questionIndex}`);        
-    
+
 
         if ((correctAnswerCount + wrongAnswerCount + noAnswerCount) === numOfQs) {
-            console.log("you shouldn't be going here yet");
             $('#randomQdiv').empty();
-            $('#randomQdiv').html("<p> Here is how you did: </p>")
+            $('#randomQdiv').html("<p> Here is how you did: </p>");
             $('#answersDiv').append(`<p>Correct: ${correctAnswerCount} </p>`);
             $('#answersDiv').append("<p>Incorrect: " + wrongAnswerCount + "</p>");
             $('#answersDiv').append("<p>Unanswered: " + noAnswerCount + "</p>");
@@ -237,22 +239,23 @@ console.log(`questionIndex second time: ${questionIndex}`);
             wrongCount = 0;
             unanswerCount = 0;  
         } else {
-            startTimer()
-            displayRandomQ()
-            console.log('What about here?')
+            startTimer();
+            displayRandomQ();
         }
-    }, 3000);
-    }
-
+    }, 2000); // change
+    };
+// When the player clicks 'Play Again?' the button hides and the game starts over
     $('#reset').click(function() {
         $('#reset').hide();
+        $('#randomQdiv').empty();
         $('#answersDiv').empty();
-        $('#choicesDiv').empty();
-        startTimer()
-        displayRandomQ()      
+// This is supposed to be putting the questions back into the original array
+        for (var i = 0; i < usedQs.length; i++) {
+            questionArr.push(usedQs[i]);
+        }
+        startTimer();
+        displayRandomQ();
+        console.log('playing again!')
     });
- 
-
-  
 
 }); // End of $(document).ready(function()

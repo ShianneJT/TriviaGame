@@ -84,27 +84,18 @@ $(document).ready(function() {
 
 // Arrays
     var timerRunning = false;
-    var timer = 20;
+    var timer = 15;
     var intervalId;
     var numOfQs = questionArr.length;
     var qIndex;
-    var questionIndex;
-    var activeQs = [];
     var usedQs = [];
-    var totalQs = [];
-    var usersChoice = "";
     var usersGuess = "";
     var correctCount = 0;
     var wrongCount = 0;
     var noAnswerCount = 0;
     var randomQ;
 
-
-console.log('Question array length: ' + questionArr.length);
-
-
-
-// Hides the reset button on load
+// Reset button is hidden on load
     $('#reset').hide();
 
 // Click Start to begin - start button disappears, a question is displayed while the timer starts
@@ -112,13 +103,6 @@ console.log('Question array length: ' + questionArr.length);
         $('#start').hide();
         displayRandomQ();
         startTimer();
-    // NOPE !@43423 This adds the array of questions into a separate array to prevent duplicate questions
-
-            console.log('Total qs: ' + totalQs.length);
-            console.log('Used qs: ' + usedQs.length);
-            console.log('Q array: ' + questionArr.length);
-            console.log('The game has started');
-       
     });
 
 // Checks if the timer is running - if false run countdown function every second
@@ -131,19 +115,19 @@ console.log('Question array length: ' + questionArr.length);
 
 // Timer starts counting down from 20
     function countdown() {
-        $('#timerDiv').html("<p>Time remaining: " + timer + "</p>");
+        $('#timerDiv').html("<h2>Time remaining: " + timer + "</h2>");
         timer--;
 
-    // When the timer reaches 0, adds 1 to no answer, stops timer and notifies user the time is up
+// When the timer reaches 0, adds 1 to no answer, stops timer and notifies user the time is up
         if (timer === 0) {
             noAnswerCount++;
             stopTimer();
-            $('#answersDiv').html("<p>TIME IS UP!</p>");
+            $('#answersDiv').html("<h4>Times up!</h4>");
             endGameCheck();
         };
     };
 
-// Stops the timer
+// Stops and resets the timer
     function stopTimer() {
         timerRunning = false;
         clearInterval(intervalId);
@@ -155,7 +139,7 @@ console.log('Question array length: ' + questionArr.length);
         randomQ = questionArr[qIndex];
         $("#questionDiv").html("<p>" + randomQ.question + "</p>");
         
-// Loops through and creates a div for each option with a class and value equal to i
+// Loops through and creates a div for each option/answer with a class and value equal to i
         for (var i = 0; i < randomQ.options.length; i++) {
             var optionsDiv = $('<div>');
             optionsDiv.addClass('userOption');
@@ -174,7 +158,7 @@ console.log('Question array length: ' + questionArr.length);
                 stopTimer();
                 correctCount++;
                 usersGuess = "";
-                $('#answersDiv').html('<h1>CORRECT!</h1>');
+                $('#answersDiv').html('<h5>Correct!</h5>');
                 endGameCheck();
 // If the value is not equal to the value, stop the timer
 // ...add one to wrong answer var and notify the user their choice is incorrect then run endGameCheck()
@@ -182,7 +166,7 @@ console.log('Question array length: ' + questionArr.length);
                 stopTimer();
                 wrongCount++;
                 usersGuess = "";
-                $('#answersDiv').html('<h1>INCORRECT!</h1>');
+                $('#answersDiv').html("<h5>Sorry, that's incorrect. The correct answer was: " + randomQ.options[randomQ.answer] + "</h5>");
                 endGameCheck();
             };
         });
@@ -191,17 +175,18 @@ console.log('Question array length: ' + questionArr.length);
 // clean up below
 // Checks the end game status
     function endGameCheck() {
-        $('#answersDiv').append("This is a test of the emergency broadcast system");
-    // Moves the question so it doesnt get duplicated
+
+// This takes the current question and places it into an array to hold used questions and removes it from the question array so it does not get chosen again
+// Then sets the timer back to 15
     usedQs.push(randomQ);
     questionArr.splice(qIndex, 1)
-
         setTimeout(function() {
             $('#answersDiv').empty();
-            timer = 5;
+            timer = 15;
 
-
+// If the combined number of right, wrong, and no answer i
         if ((correctCount + wrongCount + noAnswerCount) === numOfQs) {
+            console.log("Num of qs: " + numOfQs);
             $('#questionDiv').empty();
             $('#questionDiv').html("<p> Here is how you did: </p>");
             $('#answersDiv').append(`<p>Correct: ${correctCount} </p>`);
@@ -215,7 +200,7 @@ console.log('Question array length: ' + questionArr.length);
             startTimer();
             displayRandomQ();
         }
-    }, 2000); // change
+    }, 4000); // change
     };
 // When the player clicks 'Play Again?' the button hides and the game starts over
     $('#reset').click(function() {
@@ -227,6 +212,7 @@ console.log('Question array length: ' + questionArr.length);
         for (var j = 0; j < usedQs.length; j++) {
             questionArr.push(usedQs[j]);
         }
+        usedQs = [];
         startTimer();
         displayRandomQ();
         console.log('playing again!')

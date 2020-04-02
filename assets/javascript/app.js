@@ -1,11 +1,3 @@
-// To do: 
-// Add images and maybe some fluff
-// Tell them the right answer if they get it wrong
-
-// BUGS
-// Doesn't stop at 10 questions
-// Needs to not duplicate questions
-
 $(document).ready(function() {
 
 // Object array with trivia questions
@@ -16,6 +8,7 @@ $(document).ready(function() {
                 'Fozzy Bear', 'Chewbacca', 'Harry', 'Alf',
             ],
             answer: 1,
+            picture: 'assets/images/00.gif',
         },
         {
             question: "What is the name of Boba Fett's ship?",
@@ -23,6 +16,7 @@ $(document).ready(function() {
                 'Starship Enterprise', 'Ebon Hawk', 'Millennium Falcon', 'Slave I',
             ],
             answer: 3,
+            picture: 'assets/images/01.gif',
         },
         {
             question: "What kind of droid is C-3PO?",
@@ -30,6 +24,7 @@ $(document).ready(function() {
                 'Interrogation', 'Protocol', 'Samsung Galaxy S8', 'Astromech',
             ],
             answer: 1,
+            picture: 'assets/images/02.gif',
         },
         {
             question: "What is the name of the Ewok who helps Leia? ",
@@ -37,6 +32,7 @@ $(document).ready(function() {
                 'Olaf', 'Kermit', 'Wicket', 'Pippin',
             ],
             answer: 2,
+            picture: 'assets/images/03.gif',
         },
         {
             question: "What color is Yoda's lightsaber?",
@@ -44,6 +40,7 @@ $(document).ready(function() {
                 'Red', 'Green', 'Blue', 'Purple',
             ],
             answer: 1,
+            picture: 'assets/images/04.gif',
         },
         {
             question: "Who is Leia's only hope?",
@@ -51,6 +48,7 @@ $(document).ready(function() {
                 'Jabba The Hutt', 'Barack Obama', 'Obi-Wan Kenobi', 'Oobi Doob Scooby Dooby Benubi',
             ],
             answer: 2,
+            picture: 'assets/images/05.gif'
         },
         {
             question: "Who is C3PO's companion?",
@@ -58,6 +56,7 @@ $(document).ready(function() {
                 'Bib Fortuna', 'Willrow Hood', 'R2-D2', 'Salacious B. Crumb',
             ],
             answer: 2,
+            picture: 'assets/images/06.gif'
         },
         {
             question: "Who is Luke's Uncle?",
@@ -65,13 +64,15 @@ $(document).ready(function() {
                 'Sam', 'Phil', 'Owen', 'Fester',
             ],
             answer: 2,
+            picture: 'assets/images/07.jpg',
         },
         {
-            question: "What does Elan Sel'Sabagno (seriously, that's his name) try to sell Obi-Wan in the club on Coruscant?",
+            question: "What does the clubgoer (Elan Sel'Sabagno) try to sell Obi-Wan in the club on Coruscant?",
             options: [
                 'Death Sticks', 'Kyber Crystals', 'Toilet Paper', 'Power Convertors',
             ],
             answer: 0,
+            picture: 'assets/images/08.gif',
         },
         {
             question: "What planet is Han Solo from?",
@@ -79,6 +80,7 @@ $(document).ready(function() {
                 'Corellia', 'Coruscant', 'Dathomir', 'Tattooine',
             ],
             answer: 0,
+            picture: 'assets/images/09.gif',
         },
     ];
 
@@ -115,14 +117,14 @@ $(document).ready(function() {
 
 // Timer starts counting down from 20
     function countdown() {
-        $('#timerDiv').html("<h2>Time remaining: " + timer + "</h2>");
+        $('#timerDiv').html("<h3>Time remaining: " + timer + "</h3>");
         timer--;
 
 // When the timer reaches 0, adds 1 to no answer, stops timer and notifies user the time is up
         if (timer === 0) {
             noAnswerCount++;
             stopTimer();
-            $('#answersDiv').html("<h4>Times up!</h4>");
+            $('#answersDiv').html("<h5>Times up! The correct answer was: " + randomQ.options[randomQ.answer] + "</h5>");
             endGameCheck();
         };
     };
@@ -137,11 +139,11 @@ $(document).ready(function() {
     function displayRandomQ() {
         qIndex = Math.floor(Math.random() * questionArr.length);
         randomQ = questionArr[qIndex];
-        $("#questionDiv").html("<p>" + randomQ.question + "</p>");
+        $("#questionDiv").html("<h4>" + randomQ.question + "</h4>");
         
 // Loops through and creates a div for each option/answer with a class and value equal to i
         for (var i = 0; i < randomQ.options.length; i++) {
-            var optionsDiv = $('<div>');
+            var optionsDiv = $('<h4>');
             optionsDiv.addClass('userOption');
             optionsDiv.html(randomQ.options[i])
             optionsDiv.data('guessValue', i);
@@ -158,7 +160,7 @@ $(document).ready(function() {
                 stopTimer();
                 correctCount++;
                 usersGuess = "";
-                $('#answersDiv').html('<h5>Correct!</h5>');
+                $('#answersDiv').html('<h4>Correct!</h4>');
                 endGameCheck();
 // If the value is not equal to the value, stop the timer
 // ...add one to wrong answer var and notify the user their choice is incorrect then run endGameCheck()
@@ -166,7 +168,7 @@ $(document).ready(function() {
                 stopTimer();
                 wrongCount++;
                 usersGuess = "";
-                $('#answersDiv').html("<h5>Sorry, that's incorrect. The correct answer was: " + randomQ.options[randomQ.answer] + "</h5>");
+                $('#answersDiv').html("<h4>Sorry, that's incorrect. The correct answer was: " + randomQ.options[randomQ.answer] + "</h4>");
                 endGameCheck();
             };
         });
@@ -175,7 +177,8 @@ $(document).ready(function() {
 // clean up below
 // Checks the end game status
     function endGameCheck() {
-
+// Displays image relevant to the question
+        $('#answersDiv').append('<img src=' + randomQ.picture + '>');
 // This takes the current question and places it into an array to hold used questions and removes it from the question array so it does not get chosen again
 // Then sets the timer back to 15
     usedQs.push(randomQ);
@@ -186,12 +189,11 @@ $(document).ready(function() {
 
 // If the combined number of right, wrong, and no answer i
         if ((correctCount + wrongCount + noAnswerCount) === numOfQs) {
-            console.log("Num of qs: " + numOfQs);
             $('#questionDiv').empty();
-            $('#questionDiv').html("<p> Here is how you did: </p>");
-            $('#answersDiv').append(`<p>Correct: ${correctCount} </p>`);
-            $('#answersDiv').append("<p>Incorrect: " + wrongCount + "</p>");
-            $('#answersDiv').append("<p>Unanswered: " + noAnswerCount + "</p>");
+            $('#questionDiv').html('<h4>Game over! Here is how you did:</h4>');
+            $('#answersDiv').append(`<h4>Correct: ${correctCount}</h4>`);
+            $('#answersDiv').append(`<h4>Incorrect: ${wrongCount}</h4>`);
+            $('#answersDiv').append(`<h4>Unanswered: ${noAnswerCount}</h4>`);
             $('#reset').show();
             correctCount = 0;
             wrongCount = 0;
@@ -200,7 +202,7 @@ $(document).ready(function() {
             startTimer();
             displayRandomQ();
         }
-    }, 4000); // change
+    }, 4000);
     };
 // When the player clicks 'Play Again?' the button hides and the game starts over
     $('#reset').click(function() {
